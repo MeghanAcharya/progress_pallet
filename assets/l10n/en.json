@@ -14,5 +14,6 @@
   "enterDesc": "Enter acceptance criteria",
   "priority": "Select priority",
   "save": "Save",
-  "yourProject": "Your Projects"
+  "yourProject": "Your Projects",
+  "dueDate": "Task due date"
 }

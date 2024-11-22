@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:progresspallet/feature/task/data/model/add_task/add_task_request_data.dart';
 
 abstract class TaskScreenEvent extends Equatable {
@@ -27,6 +28,14 @@ class AddTaskEvent extends TaskScreenEvent {
 class DropdownStateUpdateEvent extends TaskScreenEvent {
   final String? selectedData;
   const DropdownStateUpdateEvent(this.selectedData);
+
+  @override
+  List<Object> get props => [];
+}
+
+class DatePickEvent extends TaskScreenEvent {
+  final BuildContext context;
+  const DatePickEvent(this.context);
 
   @override
   List<Object> get props => [];

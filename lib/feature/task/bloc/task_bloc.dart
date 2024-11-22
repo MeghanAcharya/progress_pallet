@@ -6,6 +6,7 @@ import 'package:progresspallet/feature/task/bloc/task_event.dart';
 
 import 'package:progresspallet/feature/task/bloc/task_state.dart';
 import 'package:progresspallet/feature/task/data/model/add_task/add_task_request_data.dart';
+import 'package:progresspallet/utils/app_utils.dart';
 
 class TaskListScreenBloc extends Bloc<TaskScreenEvent, TaskListScreenState> {
   GetTaskListUsecase getTaskListUsecase;
@@ -56,6 +57,18 @@ class TaskListScreenBloc extends Bloc<TaskScreenEvent, TaskListScreenState> {
     if (event is DropdownStateUpdateEvent) {
       emit(TaskScreenLoading());
       emit(ScreenStateUpdate());
+    }
+    if (event is DatePickEvent) {
+      emit(TaskScreenLoading());
+      try {
+        if (event.context.mounted) {
+          DateTime? selectedDate = await AppUtils.selectDate(event.context);
+          emit(DateSelectedState(selectedDate));
+        }
+      } catch (error, _) {
+        printMessage(error.toString());
+        emit(TaskScreenError(error.toString()));
+      }
     }
   }
 }

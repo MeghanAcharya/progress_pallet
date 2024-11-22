@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:progresspallet/extension/app_extensions.dart';
 import 'package:progresspallet/common/toast/custom_flutter_toast.dart';
 import 'package:progresspallet/common/widgets/common_app_bar.dart';
 import 'package:progresspallet/common/widgets/common_button.dart';
@@ -35,9 +36,10 @@ class _AddTaskViewState extends State<AddTaskView> with Validator {
   final formKey = GlobalKey<FormState>();
   TextEditingController titleTextEditController = TextEditingController();
   TextEditingController descTextEditController = TextEditingController();
-
+  TextEditingController dueDateTextController = TextEditingController();
   FocusNode titleFocusNode = FocusNode();
   FocusNode descFocusNode = FocusNode();
+  FocusNode dueDateFocusNode = FocusNode();
   @override
   void initState() {
     super.initState();
@@ -63,6 +65,11 @@ class _AddTaskViewState extends State<AddTaskView> with Validator {
             context.pop();
           }
           if (state is ScreenStateUpdate) {}
+
+          if (state is DateSelectedState) {
+            dueDateTextController.text =
+                state.selectedDate?.toYYYYMMDDfromDate() ?? "";
+          }
 
           return Stack(
             children: [
@@ -128,6 +135,21 @@ class _AddTaskViewState extends State<AddTaskView> with Validator {
                         "");
               },
             ),
+            extraSmallSizedBox(),
+            CommonTextFieldWidget(
+              hintText:
+                  AppLocalizations.of(context)?.translate(StringKeys.dueDate) ??
+                      "",
+              label:
+                  AppLocalizations.of(context)?.translate(StringKeys.dueDate) ??
+                      "",
+              readOnly: true,
+              controller: dueDateTextController,
+              focusNode: dueDateFocusNode,
+              onTapField: () {
+                taskBloc.add(DatePickEvent(context));
+              },
+            ),
             smallSizedBox(),
             CommonTextWidget(
               text: AppLocalizations.of(context)
@@ -179,6 +201,7 @@ class _AddTaskViewState extends State<AddTaskView> with Validator {
                         content: titleTextEditController.text.trim(),
                         description: descTextEditController.text.trim(),
                         priority: int.parse(selectedPriority),
+                        dueString: dueDateTextController.text,
                       ),
                     ),
                   );

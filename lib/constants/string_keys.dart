@@ -15,4 +15,5 @@ class StringKeys {
   static const String priority = "priority";
   static const String save = "save";
   static const String yourProject = "yourProject";
+  static const String dueDate = "dueDate";
 }

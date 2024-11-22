@@ -33,3 +33,11 @@ class AddTaskSuccess extends TaskListScreenState {}
 class ScreenStateChange extends TaskListScreenState {}
 
 class ScreenStateUpdate extends TaskListScreenState {}
+
+class DateSelectedState extends TaskListScreenState {
+  const DateSelectedState(this.selectedDate);
+  final DateTime? selectedDate;
+
+  @override
+  List<Object> get props => [];
+}

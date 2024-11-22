@@ -35,6 +35,7 @@ class AppConstants {
   };
 
   static const String mmmddyy = 'MMM dd yyyy';
+  static const String yyyymmdd = 'yyyy-MM-dd';
 
   static const List<String> taskPriority = [
     "1",
@@ -43,4 +44,6 @@ class AppConstants {
     "4",
     "5",
   ];
+
+  static const int dueDateFromNowInDays = 30;
 }

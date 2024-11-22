@@ -72,3 +72,7 @@ extension FormatDMMMYYYY on DateTime {
   String toDMMMYYYTimeFromString() =>
       DateFormat(AppConstants.mmmddyy).format(this);
 }
+
+extension FormatToyyyymmdd on DateTime {
+  String toYYYYMMDDfromDate() => DateFormat(AppConstants.yyyymmdd).format(this);
+}
