@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "984420640485",
+    "project_id": "progress-pallet",
+    "storage_bucket": "progress-pallet.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984420640485:android:d37ed02aac87ccefb5160c",
+        "android_client_info": {
+          "package_name": "com.example.progresspallet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvZ8o-21lr9iiLgPVkug6PVGY_u2RYpec"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984420640485:android:47af463baf859c3db5160c",
+        "android_client_info": {
+          "package_name": "com.progress_pallet.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvZ8o-21lr9iiLgPVkug6PVGY_u2RYpec"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

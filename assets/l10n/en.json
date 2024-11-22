@@ -1,0 +1,18 @@
+{
+  "somethingWentWrong": "An unexpected error occurred. Please refresh or try again later.",
+  "toDo": "TODO",
+  "inProgress": "In progress",
+  "done": "Completed",
+  "task": "Task",
+  "noDataTitle": "Oops! Nothing Here",
+  "noDataDesc": "It seems like we couldn’t find what you’re looking for.",
+  "acceptanceCriteria": "Acceptance Criteria",
+  "assignedTo": "Assigned to",
+  "comments": "Comment",
+  "addTask": "Add task",
+  "enterTitle": "Enter title",
+  "enterDesc": "Enter acceptance criteria",
+  "priority": "Select priority",
+  "save": "Save",
+  "yourProject": "Your Projects"
+}
