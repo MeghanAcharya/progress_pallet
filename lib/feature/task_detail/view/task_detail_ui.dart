@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:progresspallet/common/toast/custom_flutter_toast.dart';
 import 'package:progresspallet/common/widgets/common_app_bar.dart';
+import 'package:progresspallet/common/widgets/common_button.dart';
 import 'package:progresspallet/common/widgets/common_loading_indicator.dart';
 import 'package:progresspallet/common/widgets/common_no_data_view.dart';
 import 'package:progresspallet/common/widgets/common_sized_boxes.dart';
-import 'package:progresspallet/common/widgets/common_status_chip.dart';
 import 'package:progresspallet/common/widgets/common_text_widget.dart';
 import 'package:progresspallet/common/widgets/common_textfield_widget.dart';
 import 'package:progresspallet/common/widgets/common_user_info_comp.dart';
 import 'package:progresspallet/constants/app_colors.dart';
+import 'package:progresspallet/constants/app_constants.dart';
 
 import 'package:progresspallet/constants/app_dimens.dart';
 import 'package:progresspallet/constants/app_sizes.dart';
@@ -17,7 +19,9 @@ import 'package:progresspallet/constants/app_strings.dart';
 import 'package:progresspallet/constants/app_styles.dart';
 import 'package:progresspallet/constants/string_keys.dart';
 import 'package:progresspallet/dependency_injection/injection_container.dart';
+import 'package:progresspallet/extension/app_extensions.dart';
 import 'package:progresspallet/feature/task/data/model/task_list_response_model.dart';
+import 'package:progresspallet/feature/task_detail/data/model/status_data/status_data_model.dart';
 import 'package:progresspallet/feature/task_detail/view/components/display_comment_view.dart';
 import 'package:progresspallet/feature/task_detail/bloc/task_detail_bloc.dart';
 import 'package:progresspallet/feature/task_detail/bloc/task_detail_event.dart';
@@ -42,7 +46,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   List<CommentsDatum>? comments;
   TextEditingController commentController = TextEditingController();
   FocusNode commentFocusNode = FocusNode();
-
+  List<StatusDatum>? statusData = [];
+  StatusDatum? selectedStatus;
   @override
   void initState() {
     taskBloc.add(TaskDetailDataFetchEvent(widget.taskId));
@@ -51,13 +56,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBarWithBackIcon(
-        context: context,
-        titleText:
-            "${AppLocalizations.of(context)?.translate(StringKeys.taskKey)} #${widget.taskId}",
-      ),
-      body: BlocConsumer<TaskDetailScreenBloc, TaskDetailScreenState>(
+    return BlocConsumer<TaskDetailScreenBloc, TaskDetailScreenState>(
         listener: (context, state) {},
         bloc: taskBloc,
         builder: (context, state) {
@@ -66,6 +65,12 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           }
           if (state is TaskDetailScreenSuccess) {
             taskInfo = state.model;
+            statusData = state.statusInfo?.statusData ?? [];
+            selectedStatus = state.statusInfo?.statusData?.firstWhere(
+              (element) => element.statusCode == taskInfo?.status,
+              orElse: () =>
+                  state.statusInfo?.statusData?.first ?? StatusDatum(),
+            );
             taskBloc.add(TaskCommentsDataFetchEvent(
                 AllCommentRequestData(taskId: widget.taskId)));
           }
@@ -78,18 +83,49 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             taskBloc.add(TaskDetailDataFetchEvent(widget.taskId));
           }
 
-          return Stack(
-            children: [
-              buildUi(),
-              Visibility(
-                visible: state is TaskDetailScreenLoading,
-                child: const CommonLoadingIndicator(),
+          return Scaffold(
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+            floatingActionButton: Visibility(
+              visible: state is TaskDetailStateUpdate,
+              child: CommonButton(
+                buttonWidth:
+                    AppSizes.getWidth(context, percent: AppDimens.dp70),
+                onTap: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  taskInfo?.status = selectedStatus?.statusCode;
+                  if (selectedStatus?.statusCode ==
+                      AppConstants.inProgressStatus) {
+                    taskInfo?.startTime = DateTime.now();
+                  } else if (selectedStatus?.statusCode ==
+                      AppConstants.completedStatus) {
+                    taskInfo?.endTime = DateTime.now();
+                  }
+                  taskBloc.add(SaveTaskStateEvent(taskInfo ?? TaskData()));
+                },
+                buttonColor: AppColors.primary,
+                borderColor: AppColors.primary,
+                buttonTitle:
+                    AppLocalizations.of(context)?.translate(StringKeys.save) ??
+                        "",
               ),
-            ],
+            ),
+            appBar: AppBarWithBackIcon(
+              context: context,
+              titleText:
+                  "${AppLocalizations.of(context)?.translate(StringKeys.taskKey)} #${widget.taskId}",
+            ),
+            body: Stack(
+              children: [
+                buildUi(),
+                Visibility(
+                  visible: state is TaskDetailScreenLoading,
+                  child: const CommonLoadingIndicator(),
+                ),
+              ],
+            ),
           );
-        },
-      ),
-    );
+        });
   }
 
   Widget buildUi() {
@@ -126,12 +162,62 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        displayAssigneeAndStatus(),
-        smallSizedBox(),
         displayCardHeader(),
+        renderTaskState(),
+        smallSizedBox(),
+        displayAssigneeAndStatus(),
         getAddCommentTextField(),
         microSizedBox(),
         displayAddedComments(),
+      ],
+    );
+  }
+
+  Widget renderTaskState() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        renderDetailWithTitle(
+          AppLocalizations.of(context)?.translate(StringKeys.stateKey) ?? "",
+          AppUtils.getTaskStatus(taskInfo?.status),
+        ),
+        renderDetailWithTitle(
+          AppLocalizations.of(context)?.translate(StringKeys.dueDate) ?? "",
+          taskInfo?.due?.date?.toGetDisplayDateFormat() ?? "",
+        ),
+        renderDetailWithTitle(
+          AppLocalizations.of(context)?.translate(StringKeys.priority) ?? "",
+          (taskInfo?.priority ?? "").toString(),
+        ),
+      ],
+    );
+  }
+
+  Widget renderDetailWithTitle(String title, String desc) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Expanded(
+          flex: 1,
+          child: CommonTextWidget(
+            text: title,
+            textStyle: textStyleMonumentFontW500.copyWith(
+              fontSize: AppDimens.dp10,
+              color: AppColors.hint,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: CommonTextWidget(
+            text: desc,
+            textStyle: textStyleMonumentFontW400.copyWith(
+              fontSize: AppDimens.dp12,
+              color: AppColors.textSecondaryColor,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -158,9 +244,35 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         UserDisplayNameComp(
           name: (taskInfo?.assigneeId ?? AppStrings.defaultUser),
         ),
-        DisplayStatusWidget(
-          desc: AppUtils.getTaskStatus(taskInfo?.status),
-          bgColor: AppUtils.getTaskStatusColor(taskInfo?.status),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: AppDimens.dp10),
+          width: AppSizes.getWidth(context, percent: 25),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.0),
+            border: Border.all(color: AppColors.greyColor),
+            color: Colors.white,
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<StatusDatum>(
+              isExpanded: true,
+              value: selectedStatus,
+              onChanged: (value) {
+                selectedStatus = value;
+                taskBloc.add(const DropDownSelectionEvent());
+              },
+              items: statusData?.map((StatusDatum value) {
+                return DropdownMenuItem<StatusDatum>(
+                  value: value,
+                  child: CommonTextWidget(
+                    text: value.status ?? "",
+                    textStyle: textStyleMonumentFontW400.copyWith(
+                      fontSize: 10,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
         ),
       ],
     );
@@ -183,7 +295,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           text: AppLocalizations.of(context)
                   ?.translate(StringKeys.acceptanceCriteria) ??
               "",
-          textStyle: textStyleMonumentFontW500.copyWith(
+          textStyle: textStyleMonumentFontW400.copyWith(
             fontSize: AppDimens.dp10,
             color: AppColors.hint,
           ),
@@ -203,7 +315,47 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Widget getAddCommentTextField() {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        extraSmallSizedBox(),
+        const Divider(),
+        extraSmallSizedBox(),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            CommonTextWidget(
+              text: AppLocalizations.of(context)
+                      ?.translate(StringKeys.discussionKey) ??
+                  "",
+              textStyle: textStyleMonumentFontW500.copyWith(
+                fontSize: AppDimens.dp12,
+                color: AppColors.textSecondaryColor,
+              ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(right: AppDimens.dp5),
+                  child: Icon(
+                    Icons.chat_bubble_outline,
+                    size: AppDimens.dp14,
+                  ),
+                ),
+                CommonTextWidget(
+                  text: (taskInfo?.commentCount ?? 0).toString(),
+                  textStyle: textStyleMonumentFontW500.copyWith(
+                    fontSize: AppDimens.dp12,
+                    color: AppColors.textSecondaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
         ListTile(
           contentPadding: EdgeInsets.zero,
           leading: UserDisplayNameComp(

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:progresspallet/feature/task/data/model/task_list_response_model.dart';
 import 'package:progresspallet/feature/task_detail/data/model/comment/all_comment_response_data.dart';
+import 'package:progresspallet/feature/task_detail/data/model/status_data/status_data_model.dart';
 
 abstract class TaskDetailScreenState extends Equatable {
   const TaskDetailScreenState();
@@ -15,7 +16,8 @@ class TaskDetailScreenLoading extends TaskDetailScreenState {}
 
 class TaskDetailScreenSuccess extends TaskDetailScreenState {
   final TaskData? model;
-  const TaskDetailScreenSuccess(this.model);
+  final StatusDataModel? statusInfo;
+  const TaskDetailScreenSuccess(this.model, this.statusInfo);
 
   @override
   List<Object> get props => [];
@@ -40,6 +42,20 @@ class TaskCommentScreenSuccess extends TaskDetailScreenState {
 class TaskAddCommentSuccess extends TaskDetailScreenState {
   final CommentsDatum? model;
   const TaskAddCommentSuccess(this.model);
+
+  @override
+  List<Object> get props => [];
+}
+
+class TaskDetailStateChange extends TaskDetailScreenState {
+  const TaskDetailStateChange();
+
+  @override
+  List<Object> get props => [];
+}
+
+class TaskDetailStateUpdate extends TaskDetailScreenState {
+  const TaskDetailStateUpdate();
 
   @override
   List<Object> get props => [];
