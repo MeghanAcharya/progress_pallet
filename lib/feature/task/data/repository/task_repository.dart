@@ -10,6 +10,8 @@ abstract class TaskScreenRepository {
       String projectId);
   Future<Either<ServerException, TaskData>> addTaskRequest(
       AddTaskRequestData requestData);
+  Future<Either<ServerException, TaskData>> editTaskRequest(
+      AddTaskRequestData requestData);
 }
 
 class TaskScreenRepositoryImpl extends TaskScreenRepository {
@@ -36,6 +38,17 @@ class TaskScreenRepositoryImpl extends TaskScreenRepository {
       AddTaskRequestData requestData) async {
     try {
       return await remoteDataSource.addTaskRequest(requestData);
+    } on ServerException catch (ex) {
+      return Left(ServerException(code: ex.code, message: ex.message));
+    } on Exception catch (e) {
+      return Left(ServerException(code: 502, message: e.toString()));
+    }
+  }
+    @override
+  Future<Either<ServerException, TaskData>> editTaskRequest(
+      AddTaskRequestData requestData) async {
+    try {
+      return await remoteDataSource.editTaskRequest(requestData);
     } on ServerException catch (ex) {
       return Left(ServerException(code: ex.code, message: ex.message));
     } on Exception catch (e) {

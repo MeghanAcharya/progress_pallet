@@ -83,7 +83,10 @@ GoRouter getRoutes() {
             path: Routes.addTask,
             name: Routes.addTask,
             builder: (BuildContext context, GoRouterState state) {
-              return const AddTaskView();
+              Map<String, dynamic>? args = state.extra as Map<String, dynamic>;
+              return AddTaskView(
+                taskInfo: args["taskInfo"],
+              );
             },
           ),
         ],

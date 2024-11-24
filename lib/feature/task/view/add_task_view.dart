@@ -21,10 +21,12 @@ import 'package:progresspallet/feature/task/bloc/task_bloc.dart';
 import 'package:progresspallet/feature/task/bloc/task_event.dart';
 import 'package:progresspallet/feature/task/bloc/task_state.dart';
 import 'package:progresspallet/feature/task/data/model/add_task/add_task_request_data.dart';
+import 'package:progresspallet/feature/task/data/model/task_list_response_model.dart';
 import 'package:progresspallet/utils/localization/app_localizations.dart';
 
 class AddTaskView extends StatefulWidget {
-  const AddTaskView({super.key});
+  final TaskData? taskInfo;
+  const AddTaskView({super.key, this.taskInfo});
 
   @override
   State<AddTaskView> createState() => _AddTaskViewState();
@@ -42,6 +44,13 @@ class _AddTaskViewState extends State<AddTaskView> with Validator {
   FocusNode dueDateFocusNode = FocusNode();
   @override
   void initState() {
+    if (widget.taskInfo != null) {
+      titleTextEditController.text = widget.taskInfo?.content ?? "";
+      descTextEditController.text = widget.taskInfo?.description ?? "";
+      selectedPriority = (widget.taskInfo?.priority ?? 1).toString();
+      dueDateTextController.text =
+          widget.taskInfo?.due?.date?.toYYYYMMDDfromDate() ?? "";
+    }
     super.initState();
   }
 
@@ -50,8 +59,12 @@ class _AddTaskViewState extends State<AddTaskView> with Validator {
     return Scaffold(
       appBar: AppBarWithBackIcon(
         context: context,
-        titleText:
-            AppLocalizations.of(context)?.translate(StringKeys.addTask) ?? "",
+        titleText: widget.taskInfo == null
+            ? (AppLocalizations.of(context)?.translate(StringKeys.addTask) ??
+                "")
+            : (AppLocalizations.of(context)
+                    ?.translate(StringKeys.editTaskKey) ??
+                ""),
       ),
       body: BlocConsumer<TaskListScreenBloc, TaskListScreenState>(
         listener: (context, state) {},
@@ -195,16 +208,30 @@ class _AddTaskViewState extends State<AddTaskView> with Validator {
               onTap: () {
                 FocusManager.instance.primaryFocus?.unfocus();
                 if (formKey.currentState?.validate() ?? false) {
-                  taskBloc.add(
-                    AddTaskEvent(
-                      AddTaskRequestData(
-                        content: titleTextEditController.text.trim(),
-                        description: descTextEditController.text.trim(),
-                        priority: int.parse(selectedPriority),
-                        dueString: dueDateTextController.text,
+                  if (widget.taskInfo != null) {
+                    taskBloc.add(
+                      EditTaskEvent(
+                        AddTaskRequestData(
+                          content: titleTextEditController.text.trim(),
+                          description: descTextEditController.text.trim(),
+                          priority: int.parse(selectedPriority),
+                          dueString: dueDateTextController.text,
+                          id: widget.taskInfo?.id,
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    taskBloc.add(
+                      AddTaskEvent(
+                        AddTaskRequestData(
+                          content: titleTextEditController.text.trim(),
+                          description: descTextEditController.text.trim(),
+                          priority: int.parse(selectedPriority),
+                          dueString: dueDateTextController.text,
+                        ),
+                      ),
+                    );
+                  }
                 }
               },
               buttonColor: AppColors.primary,

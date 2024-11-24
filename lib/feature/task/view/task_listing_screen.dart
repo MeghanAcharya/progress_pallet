@@ -54,11 +54,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          context
-              .push(
-            Routes.getRoutes(Routes.addTask),
-          )
-              .then((val) {
+          context.push(Routes.getRoutes(Routes.addTask),
+              extra: {"taskInfo": null}).then((val) {
             taskBloc.add(TaskDataFetchEvent(widget.projectId));
           });
         },

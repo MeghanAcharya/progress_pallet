@@ -40,3 +40,11 @@ class DatePickEvent extends TaskScreenEvent {
   @override
   List<Object> get props => [];
 }
+
+class EditTaskEvent extends TaskScreenEvent {
+  final AddTaskRequestData? requestData;
+  const EditTaskEvent(this.requestData);
+
+  @override
+  List<Object> get props => [];
+}

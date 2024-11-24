@@ -9,6 +9,7 @@ import 'package:progresspallet/core/firebase_remote_config.dart';
 import 'package:progresspallet/core/logs.dart';
 import 'package:progresspallet/core/system_settings.dart';
 import 'package:progresspallet/domain/usecases/add_task_usecase.dart';
+import 'package:progresspallet/domain/usecases/edit_task_usecase.dart';
 import 'package:progresspallet/domain/usecases/get_project_usecase.dart';
 import 'package:progresspallet/domain/usecases/get_task_comments_usecase.dart';
 import 'package:progresspallet/domain/usecases/get_task_detail_usecase.dart';
@@ -103,6 +104,9 @@ Future<void> init() async {
     ..registerLazySingleton<AddTaskUsecase>(
       () => AddTaskUsecase(sl<TaskScreenRepository>()),
     )
+    ..registerLazySingleton<EditTaskUsecase>(
+      () => EditTaskUsecase(sl<TaskScreenRepository>()),
+    )
 
     // bloc
     ..registerLazySingleton<DashboardScreenBloc>(
@@ -114,6 +118,7 @@ Future<void> init() async {
       () => TaskListScreenBloc(
         getTaskListUsecase: sl<GetTaskListUsecase>(),
         addTaskUsecase: sl<AddTaskUsecase>(),
+        editTaskUsecase: sl<EditTaskUsecase>(),
       ),
     )
     ..registerLazySingleton<TaskDetailScreenBloc>(

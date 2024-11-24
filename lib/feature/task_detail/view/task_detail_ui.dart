@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:progresspallet/common/toast/custom_flutter_toast.dart';
 import 'package:progresspallet/common/widgets/common_app_bar.dart';
 import 'package:progresspallet/common/widgets/common_button.dart';
@@ -12,7 +12,6 @@ import 'package:progresspallet/common/widgets/common_textfield_widget.dart';
 import 'package:progresspallet/common/widgets/common_user_info_comp.dart';
 import 'package:progresspallet/constants/app_colors.dart';
 import 'package:progresspallet/constants/app_constants.dart';
-
 import 'package:progresspallet/constants/app_dimens.dart';
 import 'package:progresspallet/constants/app_sizes.dart';
 import 'package:progresspallet/constants/app_strings.dart';
@@ -29,6 +28,7 @@ import 'package:progresspallet/feature/task_detail/bloc/task_detail_state.dart';
 import 'package:progresspallet/feature/task_detail/data/model/comment/add_Comment_request_data.dart';
 import 'package:progresspallet/feature/task_detail/data/model/comment/all_comment_request_data.dart';
 import 'package:progresspallet/feature/task_detail/data/model/comment/all_comment_response_data.dart';
+import 'package:progresspallet/routing/routes_constants.dart';
 import 'package:progresspallet/utils/app_utils.dart';
 import 'package:progresspallet/utils/localization/app_localizations.dart';
 
@@ -114,6 +114,19 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               context: context,
               titleText:
                   "${AppLocalizations.of(context)?.translate(StringKeys.taskKey)} #${widget.taskId}",
+              actionWidgets: [
+                IconButton(
+                  onPressed: () {
+                    context.push(
+                      Routes.getRoutes(Routes.addTask),
+                      extra: {"taskInfo": taskInfo},
+                    ).then((val) {
+                      taskBloc.add(TaskDetailDataFetchEvent(widget.taskId));
+                    });
+                  },
+                  icon: const Icon(Icons.edit),
+                )
+              ],
             ),
             body: Stack(
               children: [

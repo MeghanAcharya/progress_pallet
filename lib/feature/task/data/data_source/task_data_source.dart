@@ -15,6 +15,8 @@ abstract class TaskRemoteDataSource {
       String projectId);
   Future<Either<ServerException, TaskData>> addTaskRequest(
       AddTaskRequestData requestData);
+  Future<Either<ServerException, TaskData>> editTaskRequest(
+      AddTaskRequestData requestData);
 }
 
 class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
@@ -80,6 +82,44 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
       Map<String, dynamic> requestModel = requestData.toJson()
         ..removeWhere((key, value) => (value?.toString() ?? "").trim().isEmpty);
       final uri = AppEndPoints.getRequestUrl(AppEndPoints.addTask);
+
+      final response = await dio.postUri(
+        uri,
+        options: await createDioOptions(),
+        data: requestModel,
+      );
+
+      if (response.statusCode! < 300) {
+        printMessage('${response.realUri}');
+        printMessage('${response.requestOptions.data}');
+
+        TaskData responseData = TaskData.fromJson(response.data);
+
+        return Right(responseData);
+      } else {
+        throw ServerException(
+          code: response.statusCode,
+          message: response.statusMessage ?? response.toString(),
+        );
+      }
+    } on DioException catch (e) {
+      return Left(
+        ServerException(
+          code: e.response?.statusCode ?? 500,
+          message: e.message,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<Either<ServerException, TaskData>> editTaskRequest(
+      AddTaskRequestData requestData) async {
+    try {
+      Map<String, dynamic> requestModel = requestData.toJson()
+        ..removeWhere((key, value) => (value?.toString() ?? "").trim().isEmpty);
+      final uri = AppEndPoints.getRequestUrl(
+          AppEndPoints.editTask(requestData.id ?? ""));
 
       final response = await dio.postUri(
         uri,

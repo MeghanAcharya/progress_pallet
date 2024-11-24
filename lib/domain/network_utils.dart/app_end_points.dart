@@ -8,6 +8,7 @@ class AppEndPoints {
   static String getAllComments = "/comments";
   static String postComment = "/comments";
   static String addTask = "/tasks";
+  static String editTask(String id) => "/tasks/$id";
   static Uri getRequestUrl(
     String path, {
     Map<String, dynamic>? queryParams,
