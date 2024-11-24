@@ -7,6 +7,7 @@ import 'package:progresspallet/feature/task/bloc/task_event.dart';
 import 'package:progresspallet/feature/task/bloc/task_state.dart';
 import 'package:progresspallet/feature/task/data/data_source/task_local_data_source.dart';
 import 'package:progresspallet/feature/task/data/model/add_task/add_task_request_data.dart';
+import 'package:progresspallet/feature/task/data/model/task_list_response_model.dart';
 import 'package:progresspallet/utils/app_utils.dart';
 
 class TaskListScreenBloc extends Bloc<TaskScreenEvent, TaskListScreenState> {
@@ -30,8 +31,12 @@ class TaskListScreenBloc extends Bloc<TaskScreenEvent, TaskListScreenState> {
           },
           (r) async {
             for (int i = 0; i < (r.tasks?.length ?? 0); i++) {
-              await TaskLocalDataSource()
-                  .upsertTask(r.tasks?[i].id,r.tasks?[i].localDbToJson());
+              TaskData? data = await TaskLocalDataSource()
+                  .getTaskDetail(r.tasks?[i].id ?? "");
+
+              r.tasks?[i].status = data?.status;
+              r.tasks?[i].startTime = data?.startTime;
+              r.tasks?[i].endTime = data?.endTime;
             }
             emit(TaskScreenSuccess(r));
           },

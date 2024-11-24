@@ -5,7 +5,11 @@ import 'package:progresspallet/common/toast/custom_flutter_toast.dart';
 import 'package:progresspallet/common/widgets/common_app_bar.dart';
 import 'package:progresspallet/common/widgets/common_loading_indicator.dart';
 import 'package:progresspallet/common/widgets/common_no_data_view.dart';
+import 'package:progresspallet/common/widgets/common_status_chip.dart';
+import 'package:progresspallet/constants/app_constants.dart';
 import 'package:progresspallet/constants/app_dimens.dart';
+import 'package:progresspallet/constants/app_sizes.dart';
+import 'package:progresspallet/constants/string_keys.dart';
 import 'package:progresspallet/dependency_injection/injection_container.dart';
 import 'package:progresspallet/feature/task/bloc/task_bloc.dart';
 import 'package:progresspallet/feature/task/bloc/task_event.dart';
@@ -13,6 +17,8 @@ import 'package:progresspallet/feature/task/bloc/task_state.dart';
 import 'package:progresspallet/feature/task/data/model/task_list_response_model.dart';
 import 'package:progresspallet/feature/task/view/components/task_card_view.dart';
 import 'package:progresspallet/routing/routes_constants.dart';
+import 'package:progresspallet/utils/app_utils.dart';
+import 'package:progresspallet/utils/localization/app_localizations.dart';
 
 class TaskListScreen extends StatefulWidget {
   final String? projectId;
@@ -27,8 +33,9 @@ class TaskListScreen extends StatefulWidget {
 
 class _TaskListScreenState extends State<TaskListScreen> {
   final taskBloc = sl<TaskListScreenBloc>();
-  List<TaskData> taskList = [];
-
+  List<TaskData> todoTaskList = [];
+  List<TaskData> inProgressTaskList = [];
+  List<TaskData> completedTaskList = [];
   @override
   void initState() {
     taskBloc.add(TaskDataFetchEvent(widget.projectId));
@@ -40,6 +47,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
     return Scaffold(
       appBar: AppBarWithBackIcon(
         context: context,
+        titleText:
+            AppLocalizations.of(context)?.translate(StringKeys.taskKey) ?? "",
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton(
@@ -62,17 +71,34 @@ class _TaskListScreenState extends State<TaskListScreen> {
             CustomFlutterToast.showToast(state.message ?? "");
           }
           if (state is TaskScreenSuccess) {
-            taskList = state.model?.tasks ?? [];
+            todoTaskList = [];
+            inProgressTaskList = [];
+            completedTaskList = [];
+            for (int i = 0; i < (state.model?.tasks?.length ?? 0); i++) {
+              if (state.model?.tasks?[i].status ==
+                  AppConstants.completedStatus) {
+                completedTaskList.add(state.model?.tasks?[i] ?? TaskData());
+              } else if (state.model?.tasks?[i].status ==
+                  AppConstants.inProgressStatus) {
+                inProgressTaskList.add(state.model?.tasks?[i] ?? TaskData());
+              } else {
+                todoTaskList.add(state.model?.tasks?[i] ?? TaskData());
+              }
+            }
           }
 
-          return Stack(
-            children: [
-              buildUi(),
-              Visibility(
-                visible: state is TaskScreenLoading,
-                child: const CommonLoadingIndicator(),
-              ),
-            ],
+          return SizedBox(
+            height: AppSizes.getHeight(context),
+            width: AppSizes.getWidth(context),
+            child: Stack(
+              children: [
+                buildUi(),
+                Visibility(
+                  visible: state is TaskScreenLoading,
+                  child: const CommonLoadingIndicator(),
+                ),
+              ],
+            ),
           );
         },
       ),
@@ -80,25 +106,75 @@ class _TaskListScreenState extends State<TaskListScreen> {
   }
 
   Widget buildUi() {
-    return taskList.isEmpty
-        ? const CommonNoDataView()
-        : ListView.builder(
-            shrinkWrap: true,
-            itemCount: taskList.length,
-            padding: const EdgeInsets.only(bottom: AppDimens.dp100),
-            itemBuilder: (BuildContext context, i) {
-              return TaskCardView(
-                taskData: taskList[i],
-                onTapTask: () {
-                  context.push(
-                    Routes.getRoutes(Routes.taskDetail),
-                    extra: {
-                      "id": taskList[i].id,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        renderLisViewWithHeader(
+          todoTaskList,
+          AppUtils.getTaskStatus(AppConstants.todoStatus),
+          AppUtils.getTaskStatusColor(AppConstants.todoStatus),
+        ),
+        renderLisViewWithHeader(
+          inProgressTaskList,
+          AppUtils.getTaskStatus(AppConstants.inProgressStatus),
+          AppUtils.getTaskStatusColor(AppConstants.inProgressStatus),
+        ),
+        renderLisViewWithHeader(
+          completedTaskList,
+          AppUtils.getTaskStatus(AppConstants.completedStatus),
+          AppUtils.getTaskStatusColor(AppConstants.completedStatus),
+        ),
+      ],
+    );
+  }
+
+  Widget renderLisViewWithHeader(
+      List<TaskData> listData, String textTitle, Color bgColor) {
+    return SizedBox(
+      height: AppSizes.getHeight(context, percent: AppDimens.dp29),
+      width: AppSizes.getWidth(context),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppDimens.dp20, vertical: AppDimens.dp5),
+            child: DisplayStatusWidget(
+              desc: textTitle,
+              bgColor: bgColor,
+            ),
+          ),
+          SizedBox(
+            height: AppSizes.getHeight(context, percent: AppDimens.dp24),
+            child: listData.isEmpty
+                ? const CommonNoDataView()
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: listData.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (BuildContext context, i) {
+                      return TaskCardView(
+                        taskData: listData[i],
+                        onTapTask: () {
+                          context.push(
+                            Routes.getRoutes(Routes.taskDetail),
+                            extra: {
+                              "id": listData[i].id,
+                            },
+                          ).then((val) {
+                            taskBloc.add(TaskDataFetchEvent(widget.projectId));
+                          });
+                        },
+                      );
                     },
-                  );
-                },
-              );
-            },
-          );
+                  ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:progresspallet/common/widgets/common_sized_boxes.dart';
-import 'package:progresspallet/common/widgets/common_status_chip.dart';
 import 'package:progresspallet/common/widgets/common_text_widget.dart';
 import 'package:progresspallet/common/widgets/common_user_info_comp.dart';
 import 'package:progresspallet/constants/app_constants.dart';
@@ -10,7 +9,6 @@ import 'package:progresspallet/constants/app_strings.dart';
 import 'package:progresspallet/constants/app_styles.dart';
 import 'package:progresspallet/constants/app_colors.dart';
 import 'package:progresspallet/feature/task/data/model/task_list_response_model.dart';
-import 'package:progresspallet/utils/app_utils.dart';
 
 class TaskCardView extends StatelessWidget {
   final TaskData? taskData;
@@ -24,10 +22,11 @@ class TaskCardView extends StatelessWidget {
         onTapTask?.call();
       },
       child: Container(
+        width: AppSizes.getWidth(context, percent: AppDimens.dp60),
         padding: const EdgeInsets.symmetric(
             vertical: AppDimens.dp15, horizontal: AppDimens.dp12),
         margin: const EdgeInsets.symmetric(
-            vertical: AppDimens.dp8, horizontal: AppDimens.dp15),
+            vertical: AppDimens.dp10, horizontal: AppDimens.dp15),
         decoration: BoxDecoration(
           color: AppColors.whiteColor,
           borderRadius:
@@ -35,8 +34,8 @@ class TaskCardView extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 5,
-              blurRadius: 7,
+              spreadRadius: 3,
+              blurRadius: 5,
               offset: const Offset(0, 3),
             ),
           ],
@@ -56,7 +55,7 @@ class TaskCardView extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               if (taskData?.description?.trim().isNotEmpty ?? false) ...[
-                microSizedBox(),
+                extraSmallSizedBox(),
                 CommonTextWidget(
                   text: taskData?.description ?? "",
                   textStyle: textStyleMonumentFontW400.copyWith(
@@ -65,26 +64,16 @@ class TaskCardView extends StatelessWidget {
                   ),
                   maxTextLines: AppConstants.maxListTextLines,
                   overflow: TextOverflow.ellipsis,
-                )
+                ),
+                smallSizedBox(),
               ],
+              if (taskData?.description?.trim().isEmpty ?? true) ...[
+                smallSizedBox(),
+              ]
             ],
           ),
-          subtitle: Row(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              DisplayStatusWidget(
-                desc: AppUtils.getTaskStatus(taskData?.status),
-                bgColor: AppUtils.getTaskStatusColor(taskData?.status),
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: UserDisplayNameComp(
-                  name: (taskData?.assigneeId ?? AppStrings.defaultUser),
-                ),
-              ),
-            ],
+          subtitle: UserDisplayNameComp(
+            name: (taskData?.assigneeId ?? AppStrings.defaultUser),
           ),
         ),
       ),

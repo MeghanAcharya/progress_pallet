@@ -6,6 +6,7 @@ import 'package:progresspallet/core/logs.dart';
 
 import 'package:progresspallet/domain/entities/error/server_exception.dart';
 import 'package:progresspallet/domain/network_utils.dart/app_end_points.dart';
+import 'package:progresspallet/feature/task/data/data_source/task_local_data_source.dart';
 import 'package:progresspallet/feature/task/data/model/add_task/add_task_request_data.dart';
 import 'package:progresspallet/feature/task/data/model/task_list_response_model.dart';
 
@@ -50,6 +51,10 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
 
         TaskListResponseModel responseData =
             TaskListResponseModel.fromJson({"tasks": response.data});
+        for (int i = 0; i < (responseData.tasks?.length ?? 0); i++) {
+          await TaskLocalDataSource().upsertTask(responseData.tasks?[i].id,
+              responseData.tasks?[i].localDbToJson());
+        }
 
         return Right(responseData);
       } else {
