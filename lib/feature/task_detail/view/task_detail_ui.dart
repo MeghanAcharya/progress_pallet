@@ -193,53 +193,77 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   }
 
   Widget renderActionButtons() {
-    return Visibility(
-      visible: taskInfo?.status != AppConstants.completedStatus,
-      child: InkWell(
-        onTap: () {
-          if (hasStartedTimer()) {
-            taskInfo?.status = AppConstants.completedStatus;
-            taskInfo?.endTime = DateTime.now();
-          } else {
-            taskInfo?.startTime = DateTime.now();
-            taskInfo?.status = AppConstants.inProgressStatus;
-          }
-          taskBloc.add(SaveTaskStateEvent(taskInfo ?? TaskData()));
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: AppDimens.dp5,
-            horizontal: AppDimens.dp10,
-          ),
-          decoration: BoxDecoration(
-            color:
-                hasStartedTimer() ? AppColors.lightOrange : AppColors.lightBlue,
-            borderRadius: BorderRadius.circular(AppDimens.dp6),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                hasStartedTimer() ? Icons.pause : Icons.play_arrow,
-                size: AppDimens.dp16,
-                color: AppColors.whiteColor,
-              ),
-              microSizedBox(isWidth: true),
-              CommonTextWidget(
-                text: AppLocalizations.of(context)?.translate(hasStartedTimer()
-                        ? StringKeys.stopKey
-                        : StringKeys.startKey) ??
-                    "",
-                textStyle: textStyleMonumentFontW500.copyWith(
-                  color: AppColors.whiteColor,
-                  fontSize: AppDimens.dp12,
+    return taskInfo?.status == AppConstants.completedStatus
+        ? Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppDimens.dp10,
+              vertical: AppDimens.dp10,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.whiteColor,
+              borderRadius: BorderRadius.circular(AppDimens.dp8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: const Offset(0, 3),
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+              ],
+            ),
+            child: CommonHorizontalTitleDescComp(
+              title: AppLocalizations.of(context)
+                      ?.translate(StringKeys.completedOnKey) ??
+                  "",
+              desc: taskInfo?.endTime?.toGetDisplayDateFormat(),
+            ),
+          )
+        : InkWell(
+            onTap: () {
+              if (hasStartedTimer()) {
+                taskInfo?.status = AppConstants.completedStatus;
+                taskInfo?.endTime = DateTime.now();
+              } else {
+                taskInfo?.startTime = DateTime.now();
+                taskInfo?.status = AppConstants.inProgressStatus;
+              }
+              taskBloc.add(SaveTaskStateEvent(taskInfo ?? TaskData()));
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: AppDimens.dp5,
+                horizontal: AppDimens.dp10,
+              ),
+              decoration: BoxDecoration(
+                color: hasStartedTimer()
+                    ? AppColors.lightOrange
+                    : AppColors.lightBlue,
+                borderRadius: BorderRadius.circular(AppDimens.dp6),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    hasStartedTimer() ? Icons.pause : Icons.play_arrow,
+                    size: AppDimens.dp16,
+                    color: AppColors.whiteColor,
+                  ),
+                  microSizedBox(isWidth: true),
+                  CommonTextWidget(
+                    text: AppLocalizations.of(context)?.translate(
+                            hasStartedTimer()
+                                ? StringKeys.stopKey
+                                : StringKeys.startKey) ??
+                        "",
+                    textStyle: textStyleMonumentFontW500.copyWith(
+                      color: AppColors.whiteColor,
+                      fontSize: AppDimens.dp12,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
   }
 
   bool hasStartedTimer() => taskInfo?.startTime != null;
