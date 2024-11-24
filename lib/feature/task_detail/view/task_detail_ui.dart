@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:progresspallet/common/toast/custom_flutter_toast.dart';
 import 'package:progresspallet/common/widgets/common_app_bar.dart';
 import 'package:progresspallet/common/widgets/common_button.dart';
+import 'package:progresspallet/common/widgets/common_horizontal_title_and_desc_comp.dart';
 import 'package:progresspallet/common/widgets/common_loading_indicator.dart';
 import 'package:progresspallet/common/widgets/common_no_data_view.dart';
 import 'package:progresspallet/common/widgets/common_sized_boxes.dart';
@@ -247,45 +248,20 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        renderDetailWithTitle(
-          AppLocalizations.of(context)?.translate(StringKeys.stateKey) ?? "",
-          AppUtils.getTaskStatus(taskInfo?.status),
+        CommonHorizontalTitleDescComp(
+          title: AppLocalizations.of(context)?.translate(StringKeys.stateKey) ??
+              "",
+          desc: AppUtils.getTaskStatus(taskInfo?.status),
         ),
-        renderDetailWithTitle(
-          AppLocalizations.of(context)?.translate(StringKeys.dueDate) ?? "",
-          taskInfo?.due?.date?.toGetDisplayDateFormat() ?? "",
+        CommonHorizontalTitleDescComp(
+          title:
+              AppLocalizations.of(context)?.translate(StringKeys.dueDate) ?? "",
+          desc: taskInfo?.due?.date?.toGetDisplayDateFormat() ?? "",
         ),
-        renderDetailWithTitle(
-          AppLocalizations.of(context)?.translate(StringKeys.priority) ?? "",
-          (taskInfo?.priority ?? "").toString(),
-        ),
-      ],
-    );
-  }
-
-  Widget renderDetailWithTitle(String title, String desc) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Expanded(
-          flex: 1,
-          child: CommonTextWidget(
-            text: title,
-            textStyle: textStyleMonumentFontW500.copyWith(
-              fontSize: AppDimens.dp10,
-              color: AppColors.hint,
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: CommonTextWidget(
-            text: desc,
-            textStyle: textStyleMonumentFontW400.copyWith(
-              fontSize: AppDimens.dp12,
-              color: AppColors.textSecondaryColor,
-            ),
-          ),
+        CommonHorizontalTitleDescComp(
+          title: AppLocalizations.of(context)?.translate(StringKeys.priority) ??
+              "",
+          desc: (taskInfo?.priority ?? "").toString(),
         ),
       ],
     );
