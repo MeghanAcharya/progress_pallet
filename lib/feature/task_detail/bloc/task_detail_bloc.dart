@@ -92,7 +92,7 @@ class TaskDetailScreenBloc
       try {
         await TaskLocalDataSource()
             .upsertTask(event.updateData.id, event.updateData.localDbToJson());
-        emit(const TaskDetailStateChange());
+        emit(const LocalDataUpdateState());
       } catch (error, _) {
         printMessage(error.toString());
         emit(TaskDetailScreenError(error.toString()));

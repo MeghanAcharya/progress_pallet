@@ -82,6 +82,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
             commentController.clear();
             taskBloc.add(TaskDetailDataFetchEvent(widget.taskId));
           }
+          if (state is LocalDataUpdateState) {
+            taskBloc.add(TaskDetailDataFetchEvent(widget.taskId));
+          }
 
           return Scaffold(
             floatingActionButtonLocation:
@@ -175,6 +178,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        renderActionButtons(),
+        smallSizedBox(),
         displayCardHeader(),
         renderTaskState(),
         smallSizedBox(),
@@ -186,6 +191,57 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     );
   }
 
+  Widget renderActionButtons() {
+    return Visibility(
+      visible: taskInfo?.status != AppConstants.completedStatus,
+      child: InkWell(
+        onTap: () {
+          if (hasStartedTimer()) {
+            taskInfo?.status = AppConstants.completedStatus;
+            taskInfo?.endTime = DateTime.now();
+          } else {
+            taskInfo?.startTime = DateTime.now();
+            taskInfo?.status = AppConstants.inProgressStatus;
+          }
+          taskBloc.add(SaveTaskStateEvent(taskInfo ?? TaskData()));
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            vertical: AppDimens.dp5,
+            horizontal: AppDimens.dp10,
+          ),
+          decoration: BoxDecoration(
+            color:
+                hasStartedTimer() ? AppColors.lightOrange : AppColors.lightBlue,
+            borderRadius: BorderRadius.circular(AppDimens.dp6),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                hasStartedTimer() ? Icons.pause : Icons.play_arrow,
+                size: AppDimens.dp16,
+                color: AppColors.whiteColor,
+              ),
+              microSizedBox(isWidth: true),
+              CommonTextWidget(
+                text: AppLocalizations.of(context)?.translate(hasStartedTimer()
+                        ? StringKeys.stopKey
+                        : StringKeys.startKey) ??
+                    "",
+                textStyle: textStyleMonumentFontW500.copyWith(
+                  color: AppColors.whiteColor,
+                  fontSize: AppDimens.dp12,
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  bool hasStartedTimer() => taskInfo?.startTime != null;
   Widget renderTaskState() {
     return Column(
       mainAxisSize: MainAxisSize.min,

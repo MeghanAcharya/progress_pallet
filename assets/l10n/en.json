@@ -18,5 +18,7 @@
   "dueDate": "Task due date",
   "state": "State",
   "discussion": "Discussion",
-  "editTask": "Edit task"
+  "editTask": "Edit task",
+  "start": "Start",
+  "stop": "Stop"
 }

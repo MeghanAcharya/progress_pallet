@@ -60,3 +60,10 @@ class TaskDetailStateUpdate extends TaskDetailScreenState {
   @override
   List<Object> get props => [];
 }
+
+class LocalDataUpdateState extends TaskDetailScreenState {
+  const LocalDataUpdateState();
+
+  @override
+  List<Object> get props => [];
+}

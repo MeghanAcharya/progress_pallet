@@ -19,4 +19,6 @@ class StringKeys {
   static const String stateKey = "state";
   static const String discussionKey = "discussion";
   static const String editTaskKey = "editTask";
+  static const String startKey = "start";
+  static const String stopKey = "Stop";
 }
