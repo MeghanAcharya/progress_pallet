@@ -82,7 +82,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: Container(
               margin: const EdgeInsets.only(top: AppDimens.dp15),
               decoration: BoxDecoration(
-                color: AppColors.lightOrange.withOpacity(0.1),
+                color: AppColors.whiteColor,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(AppDimens.dp30),
                   topRight: Radius.circular(AppDimens.dp30),
