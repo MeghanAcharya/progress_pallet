@@ -68,6 +68,10 @@ class TaskData {
   String? url;
   @JsonKey(name: "status")
   String? status;
+  @JsonKey(name: "start_time")
+  DateTime? startTime;
+  @JsonKey(name: "end_time")
+  DateTime? endTime;
 
   TaskData({
     this.creatorId,
@@ -94,6 +98,18 @@ class TaskData {
       _$TaskDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$TaskDataToJson(this);
+
+  Map<String, dynamic> localDbToJson() {
+    return {
+      'id': id,
+      'content': content,
+      'description': description,
+      'priority': priority,
+      'status': status,
+      'start_time': startTime?.toIso8601String(),
+      'end_time': endTime?.toIso8601String(),
+    };
+  }
 }
 
 @JsonSerializable()

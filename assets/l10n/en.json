@@ -15,5 +15,7 @@
   "priority": "Select priority",
   "save": "Save",
   "yourProject": "Your Projects",
-  "dueDate": "Task due date"
+  "dueDate": "Task due date",
+  "state": "State",
+  "discussion": "Discussion"
 }
