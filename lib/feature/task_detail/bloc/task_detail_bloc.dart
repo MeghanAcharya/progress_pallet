@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:progresspallet/constants/analytics_key_constats.dart';
 import 'package:progresspallet/constants/app_constants.dart';
 import 'package:progresspallet/core/logs.dart';
 import 'package:progresspallet/domain/usecases/get_task_comments_usecase.dart';
@@ -11,6 +12,7 @@ import 'package:progresspallet/feature/task_detail/bloc/task_detail_state.dart';
 import 'package:progresspallet/feature/task_detail/data/model/comment/add_Comment_request_data.dart';
 import 'package:progresspallet/feature/task_detail/data/model/comment/all_comment_request_data.dart';
 import 'package:progresspallet/feature/task_detail/data/model/status_data/status_data_model.dart';
+import 'package:progresspallet/utils/firebase_analytics_utils.dart';
 
 class TaskDetailScreenBloc
     extends Bloc<TaskDetailScreenEvent, TaskDetailScreenState> {
@@ -28,6 +30,7 @@ class TaskDetailScreenBloc
   void mapEventToState(
       TaskDetailScreenEvent event, Emitter<TaskDetailScreenState> emit) async {
     if (event is TaskDetailDataFetchEvent) {
+      AnalyticsUtils().logEvent(name: AppAnalyticsKey.viewTaskDetail);
       emit(TaskDetailScreenLoading());
       try {
         final model = await getTaskDetailUsecase.call(event.taskId ?? "");
@@ -69,6 +72,7 @@ class TaskDetailScreenBloc
       }
     } else if (event is AddTaskCommentsDataEvent) {
       emit(TaskDetailScreenLoading());
+      AnalyticsUtils().logEvent(name: AppAnalyticsKey.commentedOnTask);
       try {
         final model = await postCommentsUsecase
             .call(event.requestData ?? AddCommentRequestData());
@@ -89,6 +93,7 @@ class TaskDetailScreenBloc
       emit(const TaskDetailStateUpdate());
     } else if (event is SaveTaskStateEvent) {
       emit(TaskDetailScreenLoading());
+      AnalyticsUtils().logEvent(name: AppAnalyticsKey.taskStateChange);
       try {
         await TaskLocalDataSource()
             .upsertTask(event.updateData.id, event.updateData.localDbToJson());

@@ -7,6 +7,7 @@ import 'package:progresspallet/common/widgets/common_no_data_view.dart';
 import 'package:progresspallet/common/widgets/common_sized_boxes.dart';
 import 'package:progresspallet/common/widgets/common_slider_comp.dart';
 import 'package:progresspallet/common/widgets/common_text_widget.dart';
+import 'package:progresspallet/constants/analytics_key_constats.dart';
 import 'package:progresspallet/constants/app_colors.dart';
 import 'package:progresspallet/constants/app_constants.dart';
 import 'package:progresspallet/constants/app_dimens.dart';
@@ -20,6 +21,7 @@ import 'package:progresspallet/feature/dashboard/bloc/dashboard_state.dart';
 import 'package:progresspallet/feature/dashboard/data/model/project_list/project_list_response_model.dart';
 import 'package:progresspallet/feature/dashboard/view/components/project_card.dart';
 import 'package:progresspallet/routing/routes_constants.dart';
+import 'package:progresspallet/utils/firebase_analytics_utils.dart';
 import 'package:progresspallet/utils/localization/app_localizations.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -36,6 +38,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     dashboardBloc.add(const DashboardDataFetchEvent());
     super.initState();
+    AnalyticsUtils().trackScreen(screenName: AppAnalyticsKey.dashboard);
   }
 
   @override

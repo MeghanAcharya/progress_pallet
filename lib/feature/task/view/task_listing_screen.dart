@@ -6,6 +6,7 @@ import 'package:progresspallet/common/widgets/common_app_bar.dart';
 import 'package:progresspallet/common/widgets/common_loading_indicator.dart';
 import 'package:progresspallet/common/widgets/common_no_data_view.dart';
 import 'package:progresspallet/common/widgets/common_status_chip.dart';
+import 'package:progresspallet/constants/analytics_key_constats.dart';
 import 'package:progresspallet/constants/app_constants.dart';
 import 'package:progresspallet/constants/app_dimens.dart';
 import 'package:progresspallet/constants/app_sizes.dart';
@@ -18,6 +19,7 @@ import 'package:progresspallet/feature/task/data/model/task_list_response_model.
 import 'package:progresspallet/feature/task/view/components/task_card_view.dart';
 import 'package:progresspallet/routing/routes_constants.dart';
 import 'package:progresspallet/utils/app_utils.dart';
+import 'package:progresspallet/utils/firebase_analytics_utils.dart';
 import 'package:progresspallet/utils/localization/app_localizations.dart';
 
 class TaskListScreen extends StatefulWidget {
@@ -40,6 +42,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
   void initState() {
     taskBloc.add(TaskDataFetchEvent(widget.projectId));
     super.initState();
+    AnalyticsUtils().logEvent(name: AppAnalyticsKey.viewTaskBoard);
   }
 
   @override
