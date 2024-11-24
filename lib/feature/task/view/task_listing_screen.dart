@@ -148,7 +148,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
           SizedBox(
             height: AppSizes.getHeight(context, percent: AppDimens.dp24),
             child: listData.isEmpty
-                ? const CommonNoDataView()
+                ? CommonNoDataView(
+                    imageHeight: AppSizes.getHeight(context, percent: 10),
+                  )
                 : ListView.builder(
                     shrinkWrap: true,
                     itemCount: listData.length,

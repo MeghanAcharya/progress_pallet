@@ -12,10 +12,12 @@ import 'package:progresspallet/utils/localization/app_localizations.dart';
 class CommonNoDataView extends StatelessWidget {
   final String? title;
   final String? desc;
+  final double? imageHeight;
   const CommonNoDataView({
     super.key,
     this.title,
     this.desc,
+    this.imageHeight,
   });
 
   @override
@@ -31,6 +33,7 @@ class CommonNoDataView extends StatelessWidget {
             lottie.Lottie.asset(
               AppImages.noData,
               fit: BoxFit.contain,
+              height: imageHeight,
             ),
             mediumSizedBox(),
             CommonTextWidget(
