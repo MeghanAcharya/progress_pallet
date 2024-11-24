@@ -36,7 +36,7 @@ TaskData _$TaskDataFromJson(Map<String, dynamic> json) => TaskData(
           : Due.fromJson(json['due'] as Map<String, dynamic>),
       duration: json['duration'] == null
           ? null
-          : Duration.fromJson(json['duration'] as Map<String, dynamic>),
+          : DurationData.fromJson(json['duration'] as Map<String, dynamic>),
       id: json['id'] as String?,
       labels:
           (json['labels'] as List<dynamic>?)?.map((e) => e as String).toList(),
@@ -98,12 +98,13 @@ Map<String, dynamic> _$DueToJson(Due instance) => <String, dynamic>{
       'timezone': instance.timezone,
     };
 
-Duration _$DurationFromJson(Map<String, dynamic> json) => Duration(
+DurationData _$DurationDataFromJson(Map<String, dynamic> json) => DurationData(
       amount: (json['amount'] as num?)?.toInt(),
       unit: json['unit'] as String?,
     );
 
-Map<String, dynamic> _$DurationToJson(Duration instance) => <String, dynamic>{
+Map<String, dynamic> _$DurationDataToJson(DurationData instance) =>
+    <String, dynamic>{
       'amount': instance.amount,
       'unit': instance.unit,
     };

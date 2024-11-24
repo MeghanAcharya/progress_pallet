@@ -21,4 +21,6 @@ class StringKeys {
   static const String editTaskKey = "editTask";
   static const String startKey = "start";
   static const String stopKey = "Stop";
+  static const String completedOnKey = "completedOn";
+  static const String timeTakenKey = "timeTaken";
 }

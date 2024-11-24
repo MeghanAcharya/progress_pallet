@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:progresspallet/common/widgets/common_horizontal_title_and_desc_comp.dart';
 import 'package:progresspallet/common/widgets/common_sized_boxes.dart';
 import 'package:progresspallet/common/widgets/common_text_widget.dart';
 import 'package:progresspallet/common/widgets/common_user_info_comp.dart';
@@ -8,7 +9,10 @@ import 'package:progresspallet/constants/app_sizes.dart';
 import 'package:progresspallet/constants/app_strings.dart';
 import 'package:progresspallet/constants/app_styles.dart';
 import 'package:progresspallet/constants/app_colors.dart';
+import 'package:progresspallet/constants/string_keys.dart';
 import 'package:progresspallet/feature/task/data/model/task_list_response_model.dart';
+import 'package:progresspallet/utils/localization/app_localizations.dart';
+import 'package:progresspallet/extension/app_extensions.dart';
 
 class TaskCardView extends StatelessWidget {
   final TaskData? taskData;
@@ -72,11 +76,40 @@ class TaskCardView extends StatelessWidget {
               ]
             ],
           ),
-          subtitle: UserDisplayNameComp(
-            name: (taskData?.assigneeId ?? AppStrings.defaultUser),
-          ),
+          subtitle: isCompletedTask()
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    CommonHorizontalTitleDescComp(
+                      title: AppLocalizations.of(context)
+                              ?.translate(StringKeys.completedOnKey) ??
+                          "",
+                      desc: taskData?.endTime?.toGetDisplayDateFormat(),
+                    ),
+                    CommonHorizontalTitleDescComp(
+                      title: AppLocalizations.of(context)
+                              ?.translate(StringKeys.timeTakenKey) ??
+                          "",
+                      desc: getTimeTakenInMinute(),
+                    ),
+                  ],
+                )
+              : UserDisplayNameComp(
+                  name: (taskData?.assigneeId ?? AppStrings.defaultUser),
+                ),
         ),
       ),
     );
   }
+
+  String getTimeTakenInMinute() {
+    Duration difference = (taskData?.endTime ?? DateTime.now())
+        .difference(taskData?.startTime ?? DateTime.now());
+
+    return "${difference.inMinutes} ${AppConstants.durationKey}";
+  }
+
+  bool isCompletedTask() => taskData?.status == AppConstants.completedStatus;
 }

@@ -20,5 +20,7 @@
   "discussion": "Discussion",
   "editTask": "Edit task",
   "start": "Start",
-  "stop": "Stop"
+  "stop": "Stop",
+  "completedOn": "Completed on",
+  "timeTaken": "Time taken"
 }

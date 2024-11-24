@@ -75,4 +75,6 @@ class AppConstants {
       "image": AppImages.walkthrough3
     }
   ];
+
+  static const String durationKey = "mins";
 }

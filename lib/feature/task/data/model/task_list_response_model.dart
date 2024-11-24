@@ -49,7 +49,7 @@ class TaskData {
   @JsonKey(name: "due")
   Due? due;
   @JsonKey(name: "duration")
-  Duration? duration;
+  DurationData? duration;
   @JsonKey(name: "id")
   String? id;
   @JsonKey(name: "labels")
@@ -139,19 +139,19 @@ class Due {
 }
 
 @JsonSerializable()
-class Duration {
+class DurationData {
   @JsonKey(name: "amount")
   int? amount;
   @JsonKey(name: "unit")
   String? unit;
 
-  Duration({
+  DurationData({
     this.amount,
     this.unit,
   });
 
-  factory Duration.fromJson(Map<String, dynamic> json) =>
-      _$DurationFromJson(json);
+  factory DurationData.fromJson(Map<String, dynamic> json) =>
+      _$DurationDataFromJson(json);
 
-  Map<String, dynamic> toJson() => _$DurationToJson(this);
+  Map<String, dynamic> toJson() => _$DurationDataToJson(this);
 }
