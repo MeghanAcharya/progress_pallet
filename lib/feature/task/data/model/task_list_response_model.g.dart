@@ -46,7 +46,14 @@ TaskData _$TaskDataFromJson(Map<String, dynamic> json) => TaskData(
       sectionId: json['section_id'] as String?,
       parentId: json['parent_id'] as String?,
       url: json['url'] as String?,
-    )..status = json['status'] as String?;
+    )
+      ..status = json['status'] as String?
+      ..startTime = json['start_time'] == null
+          ? null
+          : DateTime.parse(json['start_time'] as String)
+      ..endTime = json['end_time'] == null
+          ? null
+          : DateTime.parse(json['end_time'] as String);
 
 Map<String, dynamic> _$TaskDataToJson(TaskData instance) => <String, dynamic>{
       'creator_id': instance.creatorId,
@@ -68,6 +75,8 @@ Map<String, dynamic> _$TaskDataToJson(TaskData instance) => <String, dynamic>{
       'parent_id': instance.parentId,
       'url': instance.url,
       'status': instance.status,
+      'start_time': instance.startTime?.toIso8601String(),
+      'end_time': instance.endTime?.toIso8601String(),
     };
 
 Due _$DueFromJson(Map<String, dynamic> json) => Due(

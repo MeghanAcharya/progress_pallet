@@ -12,6 +12,7 @@ class AddTaskRequestData {
   String? dueLang;
   int? priority;
   String? description;
+  String? statusCode;
 
   AddTaskRequestData({
     this.content,
@@ -19,6 +20,7 @@ class AddTaskRequestData {
     this.dueLang,
     this.priority,
     this.description,
+    this.statusCode,
   });
 
   factory AddTaskRequestData.fromJson(Map<String, dynamic> json) =>
@@ -28,6 +30,7 @@ class AddTaskRequestData {
         dueLang: json["due_lang"],
         priority: json["priority"],
         description: json["description"],
+        statusCode: json["status"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -36,5 +39,6 @@ class AddTaskRequestData {
         "due_lang": dueLang,
         "priority": priority,
         "description": description,
+        "status": statusCode,
       };
 }

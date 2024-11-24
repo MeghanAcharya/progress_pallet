@@ -16,4 +16,6 @@ class StringKeys {
   static const String save = "save";
   static const String yourProject = "yourProject";
   static const String dueDate = "dueDate";
+  static const String stateKey = "state";
+  static const String discussionKey = "discussion";
 }
